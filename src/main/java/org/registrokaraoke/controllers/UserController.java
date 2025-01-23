@@ -41,16 +41,16 @@ public class UserController implements Initializable {
 
     @FXML
     private TableView<?> userTable;
-//
-//    public UserController() {
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/UserView.fxml"));
-//            loader.setController(this);
-//            loader.load();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+
+    public UserController() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/UserView.fxml"));
+            loader.setController(this);
+            loader.load();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

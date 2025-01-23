@@ -16,7 +16,6 @@ import java.util.ResourceBundle;
 
 public class FindController implements Initializable {
 
-
     @FXML
     private Button findButton;
 
@@ -38,15 +37,15 @@ public class FindController implements Initializable {
     @FXML
     private TableColumn<?, ?> userColumn;
 
-//    public FindController() {
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FindView.fxml"));
-//            loader.setController(this);
-//            loader.load();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    public FindController() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FindView.fxml"));
+            loader.setController(this);
+            loader.load();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

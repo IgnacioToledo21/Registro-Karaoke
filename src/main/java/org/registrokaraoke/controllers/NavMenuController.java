@@ -1,6 +1,5 @@
 package org.registrokaraoke.controllers;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,8 +16,9 @@ import java.util.ResourceBundle;
 public class NavMenuController implements Initializable {
 
     private SongController sc = new SongController();
-    private StatsController stc = new StatsController();
-    private UserController uc = new UserController();
+    private StatsController statsController = new StatsController();
+    private UserController userController = new UserController();
+    private FindController findController = new FindController();
 
     @FXML
     private Tab findTab;
@@ -58,48 +58,14 @@ public class NavMenuController implements Initializable {
         songTab.setContent(sc.getRoot());
 
         //Usuarios
-        loadUserTab();
+        userTab.setContent(userController.getRoot());
 
         //Estadísticas
-        loadStatsTab();
+        statsTab.setContent(statsController.getRoot());
 
         //Búsquedas
-        loadFindTab();
+        findTab.setContent(findController.getRoot());
 
-    }
-
-    //Cargar vista de usuarios
-    private void loadUserTab() {
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/UserView.fxml"));
-            BorderPane userView = loader.load();
-
-            userTab.setContent(userView);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    //Cargar vista de estadísticas
-    private void loadStatsTab() {
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/StatsView.fxml"));
-            BorderPane statsView = loader.load();
-
-            statsTab.setContent(statsView);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    //Cargar vista de búsquedas
-    private void loadFindTab() {
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FindView.fxml"));
-            BorderPane findView = loader.load();
-
-            findTab.setContent(findView);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public BorderPane getRoot() {
