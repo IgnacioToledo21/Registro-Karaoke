@@ -4,9 +4,11 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 import java.net.URL;
@@ -52,7 +54,6 @@ public class NavMenuController implements Initializable {
 
         System.out.println("Inicializando NavMenuController...");
 
-        Platform.runLater(() -> {
         //Canciones
         songTab.setContent(sc.getRoot());
 
@@ -64,7 +65,6 @@ public class NavMenuController implements Initializable {
 
         //Búsquedas
         loadFindTab();
-        });
 
     }
 
