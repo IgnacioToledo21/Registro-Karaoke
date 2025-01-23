@@ -1,5 +1,6 @@
 package org.registrokaraoke.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -11,9 +12,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import org.registrokaraoke.controllers.SongController;
-
 public class NavMenuController implements Initializable {
+
+    private SongController sc = new SongController();
+    private StatsController stc = new StatsController();
+    private UserController uc = new UserController();
 
     @FXML
     private Tab findTab;
@@ -34,6 +37,7 @@ public class NavMenuController implements Initializable {
     private Tab userTab;
 
     public NavMenuController() {
+        System.out.println("Instanciando NavMenuController");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/NavMenuView.fxml"));
             loader.setController(this);
@@ -46,8 +50,11 @@ public class NavMenuController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        System.out.println("Inicializando NavMenuController...");
+
+        Platform.runLater(() -> {
         //Canciones
-        loadSongTab();
+        songTab.setContent(sc.getRoot());
 
         //Usuarios
         loadUserTab();
@@ -57,27 +64,17 @@ public class NavMenuController implements Initializable {
 
         //Búsquedas
         loadFindTab();
+        });
 
     }
 
-    //Cargar vista de canciones
-    private void loadSongTab() {
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SongView.fxml"));
-            BorderPane patternContent = loader.load();
-
-            songTab.setContent(patternContent);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     //Cargar vista de usuarios
     private void loadUserTab() {
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/UserView.fxml"));
-            BorderPane patternContent = loader.load();
+            BorderPane userView = loader.load();
 
-            userTab.setContent(patternContent);
+            userTab.setContent(userView);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,9 +83,9 @@ public class NavMenuController implements Initializable {
     private void loadStatsTab() {
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/StatsView.fxml"));
-            BorderPane patternContent = loader.load();
+            BorderPane statsView = loader.load();
 
-            statsTab.setContent(patternContent);
+            statsTab.setContent(statsView);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,9 +94,9 @@ public class NavMenuController implements Initializable {
     private void loadFindTab() {
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FindView.fxml"));
-            BorderPane patternContent = loader.load();
+            BorderPane findView = loader.load();
 
-            findTab.setContent(patternContent);
+            findTab.setContent(findView);
         } catch (IOException e) {
             e.printStackTrace();
         }

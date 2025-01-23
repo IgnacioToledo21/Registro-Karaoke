@@ -3,16 +3,18 @@ package org.registrokaraoke.controllers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class LogInController {
+public class LogInController implements Initializable {
 
     @FXML
     private Button logInButton;
@@ -26,63 +28,57 @@ public class LogInController {
     @FXML
     private BorderPane root;
 
-//    public LogInController() {
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LogInView.fxml"));
-//            loader.setController(this);
-//            loader.load();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // Aquí puedes inicializar datos o configurar elementos específicos si es necesario
+    }
 
-    // Metodo llamado al presionar el botón 'Ingresar'
     @FXML
     private void handleLogIn(ActionEvent event) {
-        String username = userTextfield.getText();
-        String password = passwordTextfield.getText();
+        String username = userTextfield.getText().trim();
+        String password = passwordTextfield.getText().trim();
 
-        // Aquí puedes agregar la lógica de autenticación
-        boolean isAuthenticated = authenticateUser(username, password);
-
-        if (isAuthenticated) {
-            // Si la autenticación es exitosa, abrir la ventana de navegación
+        // Autenticación básica
+        if (authenticateUser(username, password)) {
             openNavMenu();
         } else {
-            // Si no es exitoso, mostrar un mensaje de error o algo similar
             showLoginError();
         }
     }
 
-    // Lógica para autenticar al usuario (esto lo puedes reemplazar por tu lógica real)
     private boolean authenticateUser(String username, String password) {
-        return username.equals("root") && password.equals("1234"); // Autentificacion admin
+        // Autenticación simple (puedes expandir con una base de datos o configuración externa)
+        return username.equals("root") && password.equals("1234");
     }
 
-    // Mostrar un mensaje de error (puedes personalizarlo)
-    private void showLoginError() {
-        // Aquí puedes poner un Alert o cualquier otra cosa para notificar al usuario
-        System.out.println("Error de autenticación");
-    }
-
-    // Abrir la ventana de navegación después del login
-    // Abrir la ventana de navegación después del login exitoso
     private void openNavMenu() {
         try {
-            // Cargar la vista de navegación
+            // Cargar el NavMenuController
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/NavMenuView.fxml"));
             BorderPane navMenu = loader.load();
 
-            // Obtener el Stage principal desde la ventana de login
+            // Obtener el Stage principal desde la ventana actual
             Stage primaryStage = (Stage) root.getScene().getWindow();
-
-            // Cambiar el contenido del Stage principal
             primaryStage.setTitle("Menú de Navegación");
+
+            // Establecer la nueva vista raíz
             primaryStage.getScene().setRoot(navMenu);
 
         } catch (IOException e) {
             e.printStackTrace();
+            showErrorAlert("Error al cargar el menú", "No se pudo cargar la vista del menú de navegación.");
         }
     }
 
+    private void showLoginError() {
+        showErrorAlert("Error de autenticación", "Usuario o contraseña incorrectos. Inténtalo nuevamente.");
+    }
+
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }

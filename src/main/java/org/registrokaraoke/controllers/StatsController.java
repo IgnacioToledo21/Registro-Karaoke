@@ -31,15 +31,15 @@ public class StatsController implements Initializable {
     @FXML
     private TableColumn<?, ?> userColumn;
 
-    public StatsController() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/StatsView.fxml"));
-            loader.setController(this);
-            loader.load();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public StatsController() {
+//        try {
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/StatsView.fxml"));
+//            loader.setController(this);
+//            loader.load();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

@@ -16,6 +16,9 @@
     public class SongController implements Initializable {
 
         @FXML
+        private BorderPane root;
+
+        @FXML
         private Button addButton;
 
         @FXML
@@ -37,15 +40,13 @@
         private Button modifyButton;
 
         @FXML
-        private BorderPane root;
-
-        @FXML
         private TableView<?> songTable;
 
         @FXML
         private TableColumn<?, ?> titleColumn;
 
         public SongController() {
+            System.out.println("Instanciando SongController");
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SongView.fxml"));
                 loader.setController(this);
