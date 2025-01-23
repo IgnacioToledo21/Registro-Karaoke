@@ -15,7 +15,8 @@ import java.util.ResourceBundle;
 
 public class MainMenuController implements Initializable {
 
-    private NavMenuController nv = new NavMenuController();
+    private NavMenuController navMenuController = new NavMenuController();
+    private LogInController loginController = new LogInController();
 
     @FXML
     private BorderPane root;
@@ -32,15 +33,13 @@ public class MainMenuController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LogInView.fxml"));
-            BorderPane loginView = loader.load();
 
-            // Establecer LoginView como contenido inicial
-            root.setCenter(loginView);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        root.setCenter(loginController.getRoot());
+
+        loginController.loggedInProperty().addListener((o, ov, nv) -> {
+            root.setCenter(navMenuController.getRoot());
+        });
+
     }
 
     public BorderPane getRoot() {

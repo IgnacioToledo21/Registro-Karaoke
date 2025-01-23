@@ -1,5 +1,7 @@
 package org.registrokaraoke.controllers;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +18,12 @@ import java.util.ResourceBundle;
 
 public class LogInController implements Initializable {
 
+    // model
+
+    private BooleanProperty loggedIn = new SimpleBooleanProperty(false);
+
+    // view
+
     @FXML
     private Button logInButton;
 
@@ -27,6 +35,20 @@ public class LogInController implements Initializable {
 
     @FXML
     private BorderPane root;
+
+    public LogInController() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LogInView.fxml"));
+            loader.setController(this);
+            loader.load();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public BorderPane getRoot() {
+        return root;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -40,7 +62,7 @@ public class LogInController implements Initializable {
 
         // Autenticación básica
         if (authenticateUser(username, password)) {
-            openNavMenu();
+            loggedIn.set(true);
         } else {
             showLoginError();
         }
@@ -49,25 +71,6 @@ public class LogInController implements Initializable {
     private boolean authenticateUser(String username, String password) {
         // Autenticación simple (puedes expandir con una base de datos o configuración externa)
         return username.equals("root") && password.equals("1234");
-    }
-
-    private void openNavMenu() {
-        try {
-            // Cargar el NavMenuController
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/NavMenuView.fxml"));
-            BorderPane navMenu = loader.load();
-
-            // Obtener el Stage principal desde la ventana actual
-            Stage primaryStage = (Stage) root.getScene().getWindow();
-            primaryStage.setTitle("Menú de Navegación");
-
-            // Establecer la nueva vista raíz
-            primaryStage.getScene().setRoot(navMenu);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            showErrorAlert("Error al cargar el menú", "No se pudo cargar la vista del menú de navegación.");
-        }
     }
 
     private void showLoginError() {
@@ -81,4 +84,9 @@ public class LogInController implements Initializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    public BooleanProperty loggedInProperty() {
+        return loggedIn;
+    }
+
 }

@@ -14,7 +14,7 @@ public class RootController implements Initializable {
     @FXML
     private BorderPane root;
 
-    private MainMenuController mainMenuController;
+    private final MainMenuController mainMenuController = new MainMenuController();
 
     public RootController() {
         try {
@@ -28,8 +28,6 @@ public class RootController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        mainMenuController = new MainMenuController();
 
         getRoot().setCenter(mainMenuController.getRoot());
 
