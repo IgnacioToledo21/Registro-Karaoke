@@ -2,10 +2,13 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextField?>
 
 <BorderPane fx:id="root" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1">
     <center>
@@ -33,4 +36,14 @@
             </children>
         </HBox>
     </bottom>
+
+    <!-- Campos ocultos para agregar un nuevo usuario (no visibles en la UI) -->
+    <VBox fx:id="hiddenFields" prefHeight="0.0" prefWidth="0.0" visible="false">
+        <children>
+            <TextField fx:id="nombreTextfield" promptText="Nombre" visible="false"/>
+            <TextField fx:id="emailTextfield" promptText="Correo electrónico" visible="false"/>
+            <TextField fx:id="edadTextfield" promptText="Edad" visible="false"/>
+            <PasswordField fx:id="passwordField" promptText="Contraseña" visible="false"/>
+        </children>
+    </VBox>
 </BorderPane>

@@ -5,13 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="af7a498e-0292-48d3-9213-89ec74d007cb" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/JPAUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/models/Cancion.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/models/Estadistica.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/models/Usuario.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/services/SongService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/META-INF/persistence.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/FindController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/FindController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/NavMenuController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/NavMenuController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/LogInController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/LogInController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/SongController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/SongController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/StatsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/StatsController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/fxml/FindView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fxml/FindView.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/fxml/MainMenuView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fxml/MainMenuView.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/fxml/LogInView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fxml/LogInView.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/fxml/SongView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fxml/SongView.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/fxml/StatsView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fxml/StatsView.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/fxml/UserView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fxml/UserView.fxml" afterDir="false" />
@@ -20,6 +27,14 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="FxmlFile" />
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
