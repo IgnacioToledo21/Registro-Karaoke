@@ -70,6 +70,13 @@ public class NavMenuController implements Initializable {
         //Búsquedas
         findTab.setContent(findController.getRoot());
 
+        // Listener para detectar cambios de pestaña
+        navTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
+            if (newTab == statsTab) {
+                statsController.refreshOnView(); // Recargar datos al seleccionar la pestaña estadísticas.
+            }
+        });
+
     }
 
     public BorderPane getRoot() {

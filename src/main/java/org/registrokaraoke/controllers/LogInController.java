@@ -10,6 +10,7 @@
     import javafx.scene.layout.BorderPane;
     import javafx.scene.layout.VBox;
     import org.registrokaraoke.models.Usuario;
+    import org.registrokaraoke.services.SesionUsuario;
 
     import javax.persistence.EntityManager;
     import javax.persistence.EntityManagerFactory;
@@ -48,6 +49,8 @@
         private PasswordField passwordField;
 
         private EntityManagerFactory emf;
+
+        private Usuario usuarioLogeado;
 
         public LogInController() {
             try {
@@ -170,36 +173,31 @@
         }
 
         @FXML
-        private void handleLogIn(ActionEvent event) {
-            String email = userTextfield.getText().trim();
+        void handleLogIn(ActionEvent event) {
+            String username = userTextfield.getText().trim();
             String password = passwordField.getText().trim();
 
-            // Autenticación usando Hibernate con JPA
-            if (authenticateUser(email, password)) {
+            Usuario usuario = authenticateUser(username, password);
+            if (usuario != null) {
+                SesionUsuario.setUsuarioLogeado(usuario);
                 loggedIn.set(true);
-                showInfoAlert("Inicio de sesión exitoso", "Bienvenido, " + email + ".");
+                System.out.println("Usuario logeado: " + usuario.getNombre());
+                // Aquí podrías cargar otra vista o hacer algo al iniciar sesión
             } else {
                 showLoginError();
             }
         }
 
-        private boolean authenticateUser(String email, String contraseña) {
+        private Usuario authenticateUser(String email, String contraseña) {
             EntityManager em = emf.createEntityManager();
             try {
-                Usuario usuarioDB = em.createQuery(
+                return em.createQuery(
                                 "SELECT u FROM Usuario u WHERE u.correoElectronico = :correo AND u.contraseña = :contraseña", Usuario.class)
                         .setParameter("correo", email)
                         .setParameter("contraseña", contraseña)
                         .getSingleResult();
-
-                if (usuarioDB != null) {
-                    loggedIn.set(true);
-
-                    return true;
-                }
-                return false;
             } catch (NoResultException e) {
-                return false;
+                return null;
             } finally {
                 em.close();
             }

@@ -6,16 +6,26 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.registrokaraoke.JPAUtils;
+import org.registrokaraoke.services.SesionUsuario;
 import org.registrokaraoke.models.Cancion;
+import org.registrokaraoke.models.Estadistica;
+import org.registrokaraoke.models.Usuario;
 import org.registrokaraoke.services.SongService;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -34,9 +44,6 @@ public class SongController implements Initializable {
     private Button deleteButton;
 
     @FXML
-    private Button findButton;
-
-    @FXML
     private Button refreshButton;
 
     @FXML
@@ -53,6 +60,9 @@ public class SongController implements Initializable {
 
     @FXML
     private TableColumn<Cancion, String> genreColumn;
+
+    @FXML
+    private TextField buscarCancionTextField;
 
     private final SongService songService;
 
@@ -77,11 +87,32 @@ public class SongController implements Initializable {
         genreColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getGenero()));
 
         // Para columna de tipo Integer, usamos asObject() y el getter normal
-        durationColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getDuracion()).asString());
+        durationColumn.setCellValueFactory(
+                cellData -> new SimpleObjectProperty<>(cellData.getValue().getDuracion()).asString());
 
-        loadSongs();
+        // Listener para la búsqueda en tiempo real
+        buscarCancionTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            onSearch(newValue); // Realiza la búsqueda con el nuevo texto
+        });
+
+        loadSongs(); // Carga las canciones inicialmente
+
+
+
     }
 
+    private void onSearch(String searchText) {
+        // Limpiar la tabla antes de mostrar los resultados
+        songTable.getItems().clear();
+
+        // Si el texto de búsqueda no está vacío, buscar las canciones que coinciden
+        if (searchText != null && !searchText.trim().isEmpty()) {
+            songTable.getItems().addAll(songService.findSongsByTitle(searchText));
+        } else {
+            // Si el campo está vacío, mostrar todas las canciones
+            loadSongs();
+        }
+    }
 
     private void loadSongs() {
         songTable.getItems().clear();
@@ -90,99 +121,86 @@ public class SongController implements Initializable {
 
     @FXML
     void onAddAction(ActionEvent event) {
-        // Crear un dialogo para el título de la canción
-        TextInputDialog titleDialog = new TextInputDialog();
-        titleDialog.setTitle("Añadir Canción");
-        titleDialog.setHeaderText("Introduce el título de la canción:");
-        Optional<String> titleResult = titleDialog.showAndWait();
+        // Crear el cuadro de diálogo
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Añadir Canción");
+        dialog.setHeaderText("Introduce los detalles de la canción");
 
-        if (titleResult.isPresent()) {
-            String title = titleResult.get();
+        // Crear los campos de texto
+        TextField titleField = new TextField();
+        titleField.setPromptText("Título de la canción");
 
-            // Crear un dialogo para el artista
-            TextInputDialog artistDialog = new TextInputDialog();
-            artistDialog.setTitle("Añadir Canción");
-            artistDialog.setHeaderText("Introduce el artista de la canción:");
-            Optional<String> artistResult = artistDialog.showAndWait();
+        TextField artistField = new TextField();
+        artistField.setPromptText("Artista");
 
-            if (artistResult.isPresent()) {
-                String artist = artistResult.get();
+        TextField genreField = new TextField();
+        genreField.setPromptText("Género");
 
-                // Crear un dialogo para el género
-                TextInputDialog genreDialog = new TextInputDialog();
-                genreDialog.setTitle("Añadir Canción");
-                genreDialog.setHeaderText("Introduce el género de la canción:");
-                Optional<String> genreResult = genreDialog.showAndWait();
+        TextField durationField = new TextField();
+        durationField.setPromptText("Duración en segundos");
 
-                if (genreResult.isPresent()) {
-                    String genre = genreResult.get();
+        // Diseñar el layout del cuadro de diálogo
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
 
-                    // Crear un dialogo para la duración de la canción (usamos un InputDialog)
-                    TextInputDialog durationDialog = new TextInputDialog();
-                    durationDialog.setTitle("Añadir Canción");
-                    durationDialog.setHeaderText("Introduce la duración de la canción en segundos:");
-                    Optional<String> durationResult = durationDialog.showAndWait();
+        grid.add(new Label("Título:"), 0, 0);
+        grid.add(titleField, 1, 0);
+        grid.add(new Label("Artista:"), 0, 1);
+        grid.add(artistField, 1, 1);
+        grid.add(new Label("Género:"), 0, 2);
+        grid.add(genreField, 1, 2);
+        grid.add(new Label("Duración:"), 0, 3);
+        grid.add(durationField, 1, 3);
 
-                    if (durationResult.isPresent()) {
-                        try {
-                            int duration = Integer.parseInt(durationResult.get());
+        dialog.getDialogPane().setContent(grid);
 
-                            // Verificar que no haya campos vacíos y que la duración sea un número válido
-                            if (title.isEmpty() || artist.isEmpty() || genre.isEmpty()) {
-                                showAlert("Error", "Todos los campos deben ser llenados correctamente", AlertType.ERROR);
-                            } else {
-                                Cancion newSong = new Cancion(title, artist, genre, duration);
-                                songService.addSong(newSong);
-                                loadSongs();
-                                showAlert("Canción añadida", "La canción ha sido añadida correctamente", AlertType.INFORMATION);
-                            }
-                        } catch (NumberFormatException e) {
-                            showAlert("Error", "La duración debe ser un número válido", AlertType.ERROR);
-                        }
-                    }
+        // Añadir botones de acción
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        // Mostrar el cuadro de diálogo y esperar el resultado
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                String title = titleField.getText().trim();
+                String artist = artistField.getText().trim();
+                String genre = genreField.getText().trim();
+                int duration = Integer.parseInt(durationField.getText().trim());
+
+                if (title.isEmpty() || artist.isEmpty() || genre.isEmpty() || duration <= 0) {
+                    showAlert("Error", "Todos los campos deben ser llenados correctamente", AlertType.ERROR);
+                } else {
+                    Cancion newSong = new Cancion(title, artist, genre, duration);
+                    songService.addSong(newSong);
+                    loadSongs();
+                    showAlert("Canción añadida", "La canción ha sido añadida correctamente", AlertType.INFORMATION);
                 }
+            } catch (NumberFormatException e) {
+                showAlert("Error", "La duración debe ser un número válido", AlertType.ERROR);
             }
         }
     }
-
 
     @FXML
     void onDeleteAction(ActionEvent event) {
         Cancion selectedSong = songTable.getSelectionModel().getSelectedItem();
         if (selectedSong != null) {
-            songService.deleteSong(selectedSong.getId());
-            loadSongs();
-            showAlert("Canción eliminada", "La canción se ha eliminado correctamente", AlertType.INFORMATION);
+            Alert confirmationAlert = new Alert(AlertType.CONFIRMATION);
+            confirmationAlert.setTitle("Confirmar eliminación");
+            confirmationAlert.setHeaderText("¿Está seguro que desea eliminar la canción?");
+            confirmationAlert.setContentText("Esta acción no se puede deshacer.");
+
+            Optional<ButtonType> result = confirmationAlert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                songService.deleteSong(selectedSong.getId());
+                loadSongs();
+                showAlert("Canción eliminada", "La canción se ha eliminado correctamente", AlertType.INFORMATION);
+            }
         } else {
             showAlert("Error", "Seleccione una canción para eliminar", AlertType.ERROR);
         }
     }
-
-    @FXML
-    void onFindAction(ActionEvent event) {
-        // Crear un TextInputDialog para que el usuario ingrese el título de la canción
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Buscar Canción");
-        dialog.setHeaderText("Ingrese el título de la canción:");
-        dialog.setContentText("Título:");
-
-        // Mostrar el cuadro de diálogo y obtener la respuesta
-        dialog.showAndWait().ifPresent(searchTitle -> {
-            if (searchTitle.trim().isEmpty()) {
-                showAlert("Error", "Por favor ingrese un título válido para buscar.", AlertType.WARNING);
-                return;
-            }
-
-            // Limpiar la tabla y agregar las canciones que coinciden con la búsqueda
-            songTable.getItems().clear();
-            songTable.getItems().addAll(songService.findSongsByTitle(searchTitle));
-
-            if (songTable.getItems().isEmpty()) {
-                showAlert("No encontrado", "No se encontraron canciones con ese título.", AlertType.INFORMATION);
-            }
-        });
-    }
-
 
     @FXML
     void onModifyAction(ActionEvent event) {
@@ -206,8 +224,7 @@ public class SongController implements Initializable {
                     new Label("Título:"), titleField,
                     new Label("Artista:"), artistField,
                     new Label("Género:"), genreField,
-                    new Label("Duración (segundos):"), durationField
-            );
+                    new Label("Duración (segundos):"), durationField);
 
             // Crear el diálogo y establecer su contenido
             Dialog<ButtonType> dialog = new Dialog<>();
@@ -245,7 +262,8 @@ public class SongController implements Initializable {
                         songService.updateSong(selectedSong);
                         loadSongs();
 
-                        showAlert("Canción modificada", "La canción se ha actualizado correctamente", AlertType.INFORMATION);
+                        showAlert("Canción modificada", "La canción se ha actualizado correctamente",
+                                AlertType.INFORMATION);
                     }
                 } catch (NumberFormatException e) {
                     showAlert("Error", "La duración debe ser un número válido", AlertType.ERROR);
@@ -259,6 +277,65 @@ public class SongController implements Initializable {
     @FXML
     void onRefreshAction(ActionEvent event) {
         loadSongs(); // Recarga las canciones y actualiza la tabla
+    }
+
+    @FXML
+    private void onPlayAction(ActionEvent event) {
+        Usuario usuarioLogeado = SesionUsuario.getUsuarioLogeado();
+
+        if (usuarioLogeado == null) {
+            showAlert("Error", "no hay usuario logeaod", AlertType.ERROR);
+            return;
+        }
+
+        Cancion cancionSeleccionada = obtenerCancionSeleccionada();
+
+        if (cancionSeleccionada == null) {
+            showAlert("Error", "no hay cancion seleccionada", AlertType.ERROR);
+            return;
+        }
+
+        EntityManager em = JPAUtils.getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            // Buscar si ya existe un registro de esta canción para este usuario en la fecha
+            // actual
+            TypedQuery<Estadistica> query = em.createQuery(
+                    "SELECT e FROM Estadistica e WHERE e.usuario = :usuario AND e.cancion = :cancion AND e.fecha = :fecha",
+                    Estadistica.class);
+            query.setParameter("usuario", usuarioLogeado);
+            query.setParameter("cancion", cancionSeleccionada);
+            query.setParameter("fecha", LocalDate.now());
+
+            List<Estadistica> resultados = query.getResultList();
+
+            Estadistica estadistica;
+            if (!resultados.isEmpty()) {
+                // Si ya existe, aumentar el número de reproducciones
+                estadistica = resultados.get(0);
+                estadistica.setReproducciones(estadistica.getReproducciones() + 1);
+            } else {
+                // Si no existe, crear un nuevo registro
+                estadistica = new Estadistica(cancionSeleccionada, usuarioLogeado, LocalDate.now(), 1);
+                em.persist(estadistica);
+            }
+
+            em.getTransaction().commit();
+            System.out.println("Reproducción registrada: " + estadistica);
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            showAlert("Error", "no se pudo registrar la cancion", AlertType.ERROR);
+        } finally {
+            em.close();
+        }
+    }
+
+    private Cancion obtenerCancionSeleccionada() {
+        return songTable.getSelectionModel().getSelectedItem();
     }
 
     private void showAlert(String title, String message, AlertType type) {

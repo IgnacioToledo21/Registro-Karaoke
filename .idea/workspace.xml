@@ -5,11 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="af7a498e-0292-48d3-9213-89ec74d007cb" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/services/SesionUsuario.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/LogInController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/LogInController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/NavMenuController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/NavMenuController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/models/Usuario.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/models/Usuario.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/SongController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/SongController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/StatsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/registrokaraoke/controllers/StatsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/fxml/SongView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fxml/SongView.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

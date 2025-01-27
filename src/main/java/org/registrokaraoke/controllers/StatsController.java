@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class StatsController implements Initializable {
 
@@ -25,22 +26,18 @@ public class StatsController implements Initializable {
     private BorderPane root;
 
     @FXML
-    private TableColumn<Estadistica, String> dateColumn;
+    private TableView<Estadistica> statsTable;
+
+    @FXML
+    private TableColumn<Estadistica, String> songColumn, userColumn, dateColumn;
 
     @FXML
     private TableColumn<Estadistica, Integer> reproductionColumn;
 
     @FXML
-    private TableColumn<Estadistica, String> songColumn;
-
-    @FXML
-    private TableView<Estadistica> statsTable;
-
-    @FXML
-    private TableColumn<Estadistica, String> userColumn;
-
-    @FXML
     private TextField buscarTextField;
+
+    private ObservableList<Estadistica> allStats = FXCollections.observableArrayList(); // Almacena todos los datos
 
     public StatsController() {
         try {
@@ -48,61 +45,55 @@ public class StatsController implements Initializable {
             loader.setController(this);
             loader.load();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error cargando StatsView.fxml", e);
         }
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Llenar las columnas con los datos de las estadísticas
-        songColumn.setCellValueFactory(cellData ->
-                javafx.beans.binding.Bindings.createStringBinding(
-                        () -> cellData.getValue().getCancion().getTitulo()
-                )
-        );
-        userColumn.setCellValueFactory(cellData ->
-                javafx.beans.binding.Bindings.createStringBinding(
-                        () -> cellData.getValue().getUsuario().getNombre()
-                )
-        );
-        dateColumn.setCellValueFactory(cellData ->
-                javafx.beans.binding.Bindings.createStringBinding(
-                        () -> cellData.getValue().getFecha().toString()
-                )
-        );
-        reproductionColumn.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getReproducciones()).asObject()
-        );
+        setupTableColumns();
+        loadStats(); // Carga datos al inicio
+        setupSearchListener();
+    }
 
-        // Llenar la TableView con los datos de la base de datos
-        ObservableList<Estadistica> estadisticas = FXCollections.observableArrayList(loadEstadisticas());
-        statsTable.setItems(estadisticas);
+    private void setupTableColumns() {
+        songColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getCancion().getTitulo()));
+        userColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getUsuario().getNombre()));
+        dateColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getFecha().toString()));
+        reproductionColumn.setCellValueFactory(
+                cellData -> new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getReproducciones())
+                        .asObject());
+    }
 
-        // Listener para el campo de búsqueda en tiempo real
-        buscarTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterTableByUser(newValue); // Filtrar por nombre de usuario
-        });
+    private void setupSearchListener() {
+        buscarTextField.textProperty().addListener((observable, oldValue, newValue) -> filterTableByUser(newValue));
+    }
+
+    public void loadStats() {
+        List<Estadistica> statsFromDB = fetchStatsFromDB();
+        allStats.setAll(statsFromDB);
+        statsTable.setItems(allStats);
     }
 
     private void filterTableByUser(String userName) {
-        if (userName.isEmpty()) {
-            // Si el campo de búsqueda está vacío, mostrar todos los registros
-            statsTable.setItems(FXCollections.observableArrayList(loadEstadisticas()));
+        if (userName.isBlank()) {
+            statsTable.setItems(allStats); // Restaurar datos originales
         } else {
-            // Filtrar los registros que contienen el nombre de usuario
-            ObservableList<Estadistica> filteredData = FXCollections.observableArrayList(loadEstadisticasByUser(userName));
-            statsTable.setItems(filteredData);
+            String lowerCaseFilter = userName.toLowerCase();
+            List<Estadistica> filteredList = allStats.stream()
+                    .filter(e -> e.getUsuario().getNombre().toLowerCase().contains(lowerCaseFilter))
+                    .collect(Collectors.toList());
+            statsTable.setItems(FXCollections.observableArrayList(filteredList));
         }
     }
 
-    private List<Estadistica> loadEstadisticasByUser(String userName) {
+    private List<Estadistica> fetchStatsFromDB() {
         EntityManager em = JPAUtils.getEntityManager();
         try {
-            // Usar JPQL con LIKE para filtrar por nombre de usuario
-            TypedQuery<Estadistica> query = em.createQuery(
-                    "SELECT e FROM Estadistica e WHERE LOWER(e.usuario.nombre) LIKE LOWER(:userName)", Estadistica.class
-            );
-            query.setParameter("userName", "%" + userName + "%"); // El "%" permite la búsqueda parcial
+            TypedQuery<Estadistica> query = em.createQuery("SELECT e FROM Estadistica e ORDER BY reproducciones DESC", Estadistica.class);
             return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,17 +103,27 @@ public class StatsController implements Initializable {
         }
     }
 
-    private List<Estadistica> loadEstadisticas() {
+    public void addOrUpdateEstadistica(Estadistica estadistica) {
         EntityManager em = JPAUtils.getEntityManager();
         try {
-            TypedQuery<Estadistica> query = em.createQuery("SELECT e FROM Estadistica e", Estadistica.class);
-            return query.getResultList();
+            em.getTransaction().begin();
+            if (estadistica.getId() == null) {
+                em.persist(estadistica);
+            } else {
+                em.merge(estadistica);
+            }
+            em.getTransaction().commit();
+            loadStats(); // Recargar datos después de una actualización
         } catch (Exception e) {
             e.printStackTrace();
-            return List.of();
+            em.getTransaction().rollback();
         } finally {
             em.close();
         }
+    }
+
+    public void refreshOnView() {
+        loadStats();
     }
 
     public BorderPane getRoot() {
