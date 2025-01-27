@@ -6,21 +6,27 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import org.registrokaraoke.JPAUtils;
 import org.registrokaraoke.models.Usuario;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class UserController implements Initializable {
@@ -163,8 +169,17 @@ public class UserController implements Initializable {
             return;
         }
 
-        // Crear el nuevo usuario
-        Usuario nuevoUsuario = new Usuario(nombre, correoElectronico, edad, contraseña);
+        // Pedir si el usuario es administrador
+        ChoiceDialog<String> isAdminDialog = new ChoiceDialog<>("No", "Sí", "No");
+        isAdminDialog.setTitle("Añadir Usuario");
+        isAdminDialog.setHeaderText("¿Es el usuario administrador?");
+        isAdminDialog.setContentText("Selecciona si el usuario es administrador:");
+
+        Optional<String> isAdminOption = isAdminDialog.showAndWait();
+        Boolean isAdmin = isAdminOption.isPresent() && isAdminOption.get().equals("Sí");
+
+        // Crear el nuevo usuario, incluyendo el campo isAdmin
+        Usuario nuevoUsuario = new Usuario(nombre, correoElectronico, edad, contraseña, isAdmin);
 
         // Obtener el EntityManager para interactuar con la base de datos
         EntityManager entityManager = JPAUtils.getEntityManager();
@@ -205,6 +220,7 @@ public class UserController implements Initializable {
             entityManager.close();
         }
     }
+
 
 
 
@@ -394,21 +410,21 @@ public class UserController implements Initializable {
         TextField edadField = new TextField(usuarioDesdeDB.getEdad().toString());
         PasswordField passwordField = new PasswordField();
         passwordField.setText(usuarioDesdeDB.getContraseña());
+        CheckBox isAdminCheckBox = new CheckBox("Es Administrador");
+        isAdminCheckBox.setSelected(usuarioDesdeDB.getIsAdmin() != null && usuarioDesdeDB.getIsAdmin());
 
-        // Configurar el contenido del Dialog
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(nombreField, 1, 0);
-        grid.add(new Label("Correo Electrónico:"), 0, 1);
-        grid.add(correoField, 1, 1);
-        grid.add(new Label("Edad:"), 0, 2);
-        grid.add(edadField, 1, 2);
-        grid.add(new Label("Contraseña:"), 0, 3);
-        grid.add(passwordField, 1, 3);
+        // Configurar el contenido del Dialog con VBox
+        VBox vbox = new VBox(10); // Espaciado entre elementos
+        vbox.setPadding(new Insets(10, 10,10,10));
+        vbox.getChildren().addAll(
+                new Label("Nombre:"), nombreField,
+                new Label("Correo Electrónico:"), correoField,
+                new Label("Edad:"), edadField,
+                new Label("Contraseña:"), passwordField,
+                isAdminCheckBox
+        );
 
-        dialog.getDialogPane().setContent(grid);
+        dialog.getDialogPane().setContent(vbox);
 
         // Botones de acción
         ButtonType buttonTypeOk = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
@@ -423,6 +439,7 @@ public class UserController implements Initializable {
                     String correo = correoField.getText();
                     Integer edad = Integer.parseInt(edadField.getText());
                     String contrasena = passwordField.getText();
+                    Boolean isAdmin = isAdminCheckBox.isSelected(); // Obtener el valor del CheckBox
 
                     // Validar que los campos no estén vacíos
                     if (nombre.isEmpty() || correo.isEmpty() || edadField.getText().isEmpty() || contrasena.isEmpty()) {
@@ -435,6 +452,7 @@ public class UserController implements Initializable {
                     usuarioDesdeDB.setCorreoElectronico(correo);
                     usuarioDesdeDB.setEdad(edad);
                     usuarioDesdeDB.setContraseña(contrasena);
+                    usuarioDesdeDB.setIsAdmin(isAdmin); // Actualizar el campo isAdmin
 
                     // Persistir los cambios en la base de datos
                     entityManager.getTransaction().begin();
@@ -443,8 +461,6 @@ public class UserController implements Initializable {
 
                     loadUsersFromDatabase();
                     return usuarioDesdeDB;
-
-
 
                 } catch (NumberFormatException e) {
                     showErrorDialog("La edad debe ser un número válido.");
@@ -456,7 +472,9 @@ public class UserController implements Initializable {
         dialog.showAndWait();
     }
 
-    // Método para mostrar un diálogo de error
+
+
+    // Metodo para mostrar un diálogo de error
     private void showErrorDialog(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");

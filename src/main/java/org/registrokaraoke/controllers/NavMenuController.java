@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+
+
 public class NavMenuController implements Initializable {
 
     private SongController sc = new SongController();
@@ -39,6 +41,8 @@ public class NavMenuController implements Initializable {
     private Tab userTab;
 
     public NavMenuController() {
+
+
         System.out.println("Instanciando NavMenuController");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/NavMenuView.fxml"));
@@ -57,7 +61,7 @@ public class NavMenuController implements Initializable {
         //Canciones
         songTab.setContent(sc.getRoot());
 
-        //Usuarios
+        // Usuarios
         userTab.setContent(userController.getRoot());
 
         //Estadísticas

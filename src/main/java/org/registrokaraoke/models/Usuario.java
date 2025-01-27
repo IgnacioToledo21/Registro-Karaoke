@@ -23,9 +23,8 @@ public class Usuario {
     @Column(nullable = false, length = 255)
     private String contraseña;
 
-    // Se eliminó el campo isAdmin de la base de datos
-    // Este campo será gestionado solo en la autenticación.
-    private Boolean isAdmin;
+    @Column(nullable = false)
+    private Boolean isAdmin;  // Se añade el campo isAdmin para persistirlo en la base de datos
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Estadistica> estadisticas;
@@ -34,13 +33,13 @@ public class Usuario {
     public Usuario() {
     }
 
-    // Constructor con parámetros
-    public Usuario(String nombre, String correoElectronico, Integer edad, String contraseña) {
+    // Constructor con parámetros, añadiendo isAdmin
+    public Usuario(String nombre, String correoElectronico, Integer edad, String contraseña, Boolean isAdmin) {
         this.nombre = nombre;
         this.correoElectronico = correoElectronico;
         this.edad = edad;
         this.contraseña = contraseña;
-        // No asignamos isAdmin aquí, lo manejaremos en la lógica de autenticación
+        this.isAdmin = false; // Asignamos el valor de isAdmin
     }
 
     // Getters y setters
